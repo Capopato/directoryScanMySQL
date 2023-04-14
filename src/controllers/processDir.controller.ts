@@ -6,14 +6,16 @@ import { secondProcessDirectoryScan } from "../utils/2ndProcessDir.util";
 export const processDirectory = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const dirPath = req.body.dirPath;
+    const table = req.body.table;
+
     const files = fs.readdirSync(dirPath);
     for (const file of files) {
       const filePath = `${dirPath}/${file}`;
       const typeOfFilePath = fs.statSync(filePath);
       if (typeOfFilePath.isDirectory()) {
-        await secondProcessDirectoryScan(filePath);
+        await secondProcessDirectoryScan(filePath, table);
       } else if (filePath.endsWith(".mp3")) {
-        await processMP3File(filePath);
+        await processMP3File(filePath, table);
       }
     }
     res.status(200).json({ succes: "All files are added to the database." });
